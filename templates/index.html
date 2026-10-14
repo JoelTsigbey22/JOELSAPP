@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JOEL WhatsApp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{margin:0;font-family:Arial;background:#111b21}
+.header{background:#202c33;color:white;padding:15px;font-size:20px;font-weight:bold}
+.chat{height:78vh;overflow:auto;padding:10px;background:#0b141a}
+.msg{background:#202c33;color:white;padding:8px 12px;margin:6px;border-radius:8px;max-width:70%;word-wrap:break-word}
+.me{background:#005c4b;margin-left:auto}
+.inputbox{display:flex;padding:10px;background:#202c33;position:fixed;bottom:0;width:100%;box-sizing:border-box}
+input{flex:1;padding:12px;border-radius:20px;border:none;outline:none}
+button{background:#00a884;color:white;border:none;padding:10px 20px;border-radius:20px;margin-left:8px;font-weight:bold;cursor:pointer}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+<div class="header">💬 JOEL's WhatsApp - Ghana 🇬🇭 LIVE</div>
+<div class="chat" id="chat"></div>
+<div class="inputbox">
+<input id="name" value="JOEL" style="max-width:80px;margin-right:5px">
+<input id="msg" placeholder="Type a message...">
+<button onclick="send()">Send ➤</button>
+</div>
+<script>
+let socket=io();
+let joined=false;
+socket.on('message',d=>{
+  let div=document.createElement('div');
+  div.className='msg'+(d.name==document.getElementById('name').value?' me':'');
+  div.innerHTML=`<b>${d.name}:</b> ${d.msg}`;
+  document.getElementById('chat').appendChild(div);
+  document.getElementById('chat').scrollTop=99999;
+});
+function send(){
+  let n=document.getElementById('name').value||'JOEL';
+  let m=document.getElementById('msg').value;
+  if(!m) return;
+  if(!joined){socket.emit('join',{name:n});joined=true;}
+  socket.emit('chat',{name:n,msg:m});
+  document.getElementById('msg').value='';
+}
+document.getElementById('msg').addEventListener('keypress',e=>{if(e.key=='Enter')send()});
+</script>
+</body>
+</html>
